@@ -39,7 +39,7 @@ AUTH_USER_MODEL = "users.User"
 
 # Auth redirects
 LOGIN_URL = "login"
-LOGIN_REDIRECT_URL = "index"
+LOGIN_REDIRECT_URL = "vehicles:index"
 LOGOUT_REDIRECT_URL = "login"
 
 # Application definition

@@ -1,0 +1,185 @@
+{% extends "vehicles/base.html" %}
+
+{% block title %}
+    {% if form.instance.pk %}
+        Edit Vehicle
+    {% else %}
+        Add Vehicle
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8 col-xl-7">
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="h2 mb-1">
+                    {% if form.instance.pk %}
+                        Edit Vehicle
+                    {% else %}
+                        Add Vehicle
+                    {% endif %}
+                </h1>
+
+                <p class="text-muted mb-0">
+                    {% if form.instance.pk %}
+                        Update the vehicle information below.
+                    {% else %}
+                        Enter the vehicle information below.
+                    {% endif %}
+                </p>
+            </div>
+
+            <a
+                href="{% url 'vehicles:index' %}"
+                class="btn btn-outline-secondary"
+            >
+                Back
+            </a>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    <!-- Vehicle -->
+                    <div class="mb-3">
+                        <label for="{{ form.vehicle.id_for_label }}" class="form-label fw-semibold">
+                            Vehicle
+                        </label>
+
+                        {{ form.vehicle }}
+
+                        {% if form.vehicle.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.vehicle.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Registration Number -->
+                    <div class="mb-3">
+                        <label
+                            for="{{ form.registration_number.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Registration Number
+                        </label>
+
+                        {{ form.registration_number }}
+
+                        {% if form.registration_number.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.registration_number.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Chassis Number -->
+                    <div class="mb-3">
+                        <label
+                            for="{{ form.chassis_number.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Chassis Number
+                        </label>
+
+                        {{ form.chassis_number }}
+
+                        {% if form.chassis_number.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.chassis_number.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Tyre Size -->
+                    <div class="mb-3">
+                        <label
+                            for="{{ form.tyre_size.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Tyre Size
+                        </label>
+
+                        {{ form.tyre_size }}
+
+                        {% if form.tyre_size.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.tyre_size.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Tyre Quantity -->
+                    <div class="mb-3">
+                        <label
+                            for="{{ form.tyre_quantity.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Tyre Quantity
+                        </label>
+
+                        {{ form.tyre_quantity }}
+
+                        {% if form.tyre_quantity.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.tyre_quantity.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Remarks -->
+                    <div class="mb-4">
+                        <label
+                            for="{{ form.remarks.id_for_label }}"
+                            class="form-label fw-semibold"
+                        >
+                            Remarks
+                        </label>
+
+                        {{ form.remarks }}
+
+                        {% if form.remarks.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ form.remarks.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a
+                            href="{% url 'vehicles:index' %}"
+                            class="btn btn-outline-secondary"
+                        >
+                            Cancel
+                        </a>
+
+                        <button type="submit" class="btn btn-primary">
+                            {% if form.instance.pk %}
+                                Save Changes
+                            {% else %}
+                                Add Vehicle
+                            {% endif %}
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,3 +1,22 @@
+{% extends "vehicles/base.html" %}
+
+{% block content %}
+  <h2>Log in</h2>
+
+  {% if form.errors %}
+    <div class="alert alert-danger" role="alert">
+      Please correct the error below.
+    </div>
+  {% endif %}
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
 <form method="post">
     {% csrf_token %}
 
@@ -5,3 +24,5 @@
 
     <button type="submit">Log in</button>
 </form>
+
+{% endblock %}

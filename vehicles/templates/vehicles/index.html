@@ -1,0 +1,50 @@
+{% extends "vehicles/base.html" %}
+
+{% block title %}Vehicle List{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h2 mb-0">Vehicle List</h1>
+        <a href="{% url 'vehicles:create_vehicle' %}" class="btn btn-primary">Add Vehicle</a>
+    </div>
+
+
+{% if vehicles %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Vehicle</th>
+                <th>Registration Number</th>
+                <th>Chassis Number</th>
+                <th>Tyre Size</th>
+                <th>Tyre Quantity</th>
+                <th>Remarks</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for vehicle in vehicles %}
+                <tr>
+                    <td>{{ vehicle.vehicle }}</td>
+                    <td>{{ vehicle.registration_number }}</td>
+                    <td>{{ vehicle.chassis_number }}</td>
+                    <td>{{ vehicle.tyre_size }}</td>
+                    <td>{{ vehicle.tyre_quantity }}</td>
+                    <td>{{ vehicle.remarks }}</td>
+                    <td>
+                        <!-- Add edit and delete buttons here -->
+                        <a href="{% url 'vehicles:edit_vehicle' vehicle.pk %}" class="btn btn-warning">Edit</a>
+                        <form method="post" action="{% url 'vehicles:delete_vehicle' vehicle.pk %}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this vehicle? This action cannot be undone.');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>No vehicles found.</p>
+{% endif %}
+
+{% endblock %}
