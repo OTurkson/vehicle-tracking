@@ -32,7 +32,12 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.ngrok-free.app', 'bride-purify-legume.ngrok-free.dev']
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://bride-purify-legume.ngrok-free.dev',
+]
+
 
 # User model
 AUTH_USER_MODEL = "users.User"

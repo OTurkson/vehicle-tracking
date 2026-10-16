@@ -1,0 +1,164 @@
+<!-- Results summary -->
+<div
+  class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2"
+>
+  <p class="text-muted mb-0">
+    {{ page_obj.paginator.count }} vehicle{{ page_obj.paginator.count|pluralize}} found
+  </p>
+
+  {% if page_obj.paginator.count %}
+  <small class="text-muted">
+    Showing {{ page_obj.start_index }}–{{ page_obj.end_index }}
+  </small>
+  {% endif %}
+</div>
+
+<!-- Vehicle table -->
+<div class="card shadow-sm">
+  <div class="table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead class="table-light">
+        <tr>
+          <th scope="col">Vehicle</th>
+          <th scope="col">Registration</th>
+          <th scope="col">Chassis Number</th>
+          <th scope="col">Tyre Size</th>
+          <th scope="col">Qty</th>
+          <th scope="col">Remarks</th>
+          <th scope="col" class="text-end">Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for vehicle in page_obj %}
+        <tr>
+          <td class="fw-semibold">{{ vehicle.vehicle }}</td>
+
+          <td class="text-nowrap">{{ vehicle.registration_number }}</td>
+
+          <td class="text-break">{{ vehicle.chassis_number }}</td>
+
+          <td class="text-nowrap">{{ vehicle.tyre_size }}</td>
+
+          <td>{{ vehicle.tyre_quantity|default_if_none:"—" }}</td>
+
+          <td class="text-break">{{ vehicle.remarks|default_if_none:"—" }}</td>
+
+          <td>
+            <div class="d-flex justify-content-end gap-2">
+              {% if perms.vehicles.change_vehicle %}
+              <a
+                href="{% url 'vehicles:edit_vehicle' vehicle.pk %}"
+                class="btn btn-outline-primary btn-sm"
+              >
+                Edit
+              </a>
+              {% endif %} {% if perms.vehicles.delete_vehicle %}
+              <form
+                method="post"
+                action="{% url 'vehicles:delete_vehicle' vehicle.pk %}"
+                onsubmit="
+                  return confirm(
+                    'Are you sure you want to permanently delete this vehicle? This action cannot be undone.',
+                  );
+                "
+              >
+                {% csrf_token %}
+
+                <button type="submit" class="btn btn-outline-danger btn-sm">
+                  Delete
+                </button>
+              </form>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+
+        {% empty %}
+        <tr>
+          <td colspan="6" class="text-center py-5">
+            {% if query or selected_tyre_size %}
+            <h2 class="h5">No matching vehicles</h2>
+            <p class="text-muted mb-3">
+              Try another search term or clear the filters.
+            </p>
+
+            <a
+              href="{% url 'vehicles:index' %}"
+              class="btn btn-outline-primary"
+            >
+              Show all vehicles
+            </a>
+            {% else %}
+            <h2 class="h5">No vehicles added yet</h2>
+            <p class="text-muted mb-0">
+              Add your first vehicle to get started.
+            </p>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Pagination -->
+{% if page_obj.paginator.num_pages > 1 %}
+<nav aria-label="Vehicle list pages" class="mt-4">
+  <ul class="pagination justify-content-center flex-wrap">
+    {% if page_obj.has_previous %}
+    <li class="page-item">
+      <a
+        class="page-link"
+        href="?q={{ query|urlencode }}&amp;tyre_size={{ selected_tyre_size|urlencode }}&amp;page=1"
+      >
+        First
+      </a>
+    </li>
+
+    <li class="page-item">
+      <a
+        class="page-link"
+        href="?q={{ query|urlencode }}&amp;tyre_size={{ selected_tyre_size|urlencode }}&amp;page={{ page_obj.previous_page_number }}"
+      >
+        Previous
+      </a>
+    </li>
+    {% endif %} {% for page_number in page_obj.paginator.page_range %}
+    <li
+      class="page-item {% if page_number == page_obj.number %}active{% endif %}"
+    >
+      {% if page_number == page_obj.number %}
+      <span class="page-link" aria-current="page"> {{ page_number }} </span>
+      {% else %}
+      <a
+        class="page-link"
+        href="?q={{ query|urlencode }}&amp;tyre_size={{ selected_tyre_size|urlencode }}&amp;page={{ page_number }}"
+      >
+        {{ page_number }}
+      </a>
+      {% endif %}
+    </li>
+    {% endfor %} {% if page_obj.has_next %}
+    <li class="page-item">
+      <a
+        class="page-link"
+        href="?q={{ query|urlencode }}&amp;tyre_size={{ selected_tyre_size|urlencode }}&amp;page={{ page_obj.next_page_number }}"
+      >
+        Next
+      </a>
+    </li>
+
+    <li class="page-item">
+      <a
+        class="page-link"
+        href="?q={{ query|urlencode }}&amp;tyre_size={{ selected_tyre_size|urlencode }}&amp;page={{ page_obj.paginator.num_pages }}"
+      >
+        Last
+      </a>
+    </li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}

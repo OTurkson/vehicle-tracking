@@ -55,10 +55,10 @@ class VehicleForm(ModelForm):
             ),
         }
 
-    # def clean_registration_number(self):
-    #     value = self.cleaned_data["registration_number"]
-    #     return value.strip().upper()
+    def clean_registration_number(self):
+        value = self.cleaned_data["registration_number"]
+        return value.strip().upper() if value else None
 
-    # def clean_chassis_number(self):
-    #     value = self.cleaned_data["chassis_number"]
-    #     return value.strip().upper()
+    def clean_chassis_number(self):
+        value = self.cleaned_data["chassis_number"]
+        return value.strip().upper() if value else None
