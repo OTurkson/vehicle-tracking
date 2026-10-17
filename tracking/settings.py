@@ -32,12 +32,44 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.ngrok-free.app', 'bride-purify-legume.ngrok-free.dev']
+if not DEBUG:
+    # Recognize HTTPS requests forwarded by Render's proxy.
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-CSRF_TRUSTED_ORIGINS = [
-    'https://bride-purify-legume.ngrok-free.dev',
-]
+    # Redirect HTTP requests to HTTPS.
+    SECURE_SSL_REDIRECT = True
 
+    # Send authentication/session and CSRF cookies only over HTTPS.
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
+    # Start with a short HSTS duration while verifying deployment.
+    SECURE_HSTS_SECONDS = 3600
+
+    # Leave these disabled on the initial deployment.
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+    SECURE_HSTS_PRELOAD = False
+else:
+    # Keep local HTTP development working.
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+    SECURE_HSTS_SECONDS = 0
+
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+
+render_hostname = os.getenv("RENDER_EXTERNAL_HOSTNAME")
+
+if render_hostname:
+    ALLOWED_HOSTS.append(render_hostname)
+
+
+CSRF_TRUSTED_ORIGINS = []
+
+if render_hostname:
+    CSRF_TRUSTED_ORIGINS.append(
+        f"https://{render_hostname}"
+    )
 
 # User model
 AUTH_USER_MODEL = "users.User"
@@ -62,6 +94,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -143,12 +176,42 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# For production, use WhiteNoise to serve static files
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
+
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.console.EmailBackend',
-    },
-}
+if DEBUG:
+    MAILERS = {
+        "default": {
+            "BACKEND": (
+                "django.core.mail.backends.console.EmailBackend"
+            ),
+        },
+    }
+else:
+    MAILERS = {
+        "default": {
+            "BACKEND": (
+                "django.core.mail.backends.smtp.EmailBackend"
+            ),
+            "OPTIONS": {
+                "host": os.getenv("EMAIL_HOST", ""),
+                "port": int(os.getenv("EMAIL_PORT", "587")),
+                "username": os.getenv("EMAIL_HOST_USER", ""),
+                "password": os.getenv("EMAIL_HOST_PASSWORD", ""),
+                "use_tls": True,
+                "timeout": 10,
+            },
+        },
+    }
